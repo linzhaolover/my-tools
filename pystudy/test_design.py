@@ -27,7 +27,7 @@ class Factory(object):
         else:
             return None
 
-    
+
 class A(Interface):
     def __init__(self):
         pass
@@ -51,4 +51,4 @@ if __name__ == '__main__':
     b = factory.create('B')
     b.run()
 
-    
+
