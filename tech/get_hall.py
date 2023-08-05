@@ -17,7 +17,7 @@ from email.header import Header
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-token = "eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6Ijk0ZTRkY2UwLTkzN2QtNDJlNi05NGYwLWMyZDk0MTgwYzE0YiJ9.bJWCyRM9__ZSVvpeXQgpHEJ8IPwcjLcrKVufH9Qixz7KJCNhEz7TwjzZsVYHrn8erc-AoTPF9CYihitucGFGvA"
+token = "eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6IjE2NDExMGZmLWQ3M2QtNDhiZS05YmFmLWZmNzgwMTYxMjg2MiJ9.KpCU0IRqa91EOoZ07FXhoF1-v1hV8uZhv3RMBUexIazhpj-DlbzYEufiTdGQrJaj22yDIzkIgsbIe6wmppPGMQ"
 
 
 class MyMail(object):
@@ -27,7 +27,7 @@ class MyMail(object):
         smtp_server = 'smtp.qiye.aliyun.com'
         smtp_port = 465
         smtp_username = 'business@x-metaview.com'
-        smtp_password = 'Xys20228888'
+        # smtp_password = 'Xys20228888'
 
         # Email content
         subject = f'send hall report {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
@@ -89,19 +89,29 @@ def get_schedule_by_hallid(query_date="2023/08/11"):
         "saleMode":1,
         "single": True,
     }
-    response = requests.get(url, params=payload, headers=headers, verify=False)
-    # print(response.url)
-    # print(response.json())
+    try:
+        response = requests.get(url, params=payload, headers=headers, verify=False)
+        response.raise_for_status()
+        # print(response.url)
+        # print(response.json())
+    except Exception as ex:
+        print(ex)
+        return {"code": -1, "data": []}
+    ret_data = response.json()
+    if ret_data.get("code") != 200:
+        print(ret_data)
+        return {"code": -1, "data": []}
+
 
     ret = {"code": -1, "data": []}
     data = response.json().get("data")
     for d in data:
-        ticket_pool = d.get("ticketPool")
-        d = {"scheduleName": d.get("scheduleName"), "name": d.get("name"), "currentDate": d.get("currentDate"), "ticketPool": ticket_pool, }
         # print(d)
-        if ticket_pool >= 1:
+        ticket_pool = d.get("ticketPool")
+        td = {"scheduleName": d.get("scheduleName"), "name": d.get("name"), "currentDate": d.get("currentDate"), "ticketPool": ticket_pool, }
+        if ticket_pool >= 2:
             ret["code"] = 0
-            ret["data"].append(d)
+            ret["data"].append(td)
     return ret
 
 def get_schedule_id():
@@ -149,10 +159,12 @@ if __name__ == "__main__":
         if ret.get("code") == 0:
             data.extend(ret.get("data"))
             print("x" * 20)
-            print(ret)
+            # print(ret)
 
 
     if len(data):
         content = json.dumps(data, indent=4, ensure_ascii=False)
         print(content)
+
+        print("send mail -- >>")
         MyMail().send_mail(content)
