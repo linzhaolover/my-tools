@@ -80,3 +80,7 @@ if [ $# -lt 3 ]; then
 fi
 check_zip_or_unzip $1 $2 $3
 exit $?
+
+# force unzip overwrite exist file
+# unzip -o -e $zip_file_path -d $unzip_dir_path
+```

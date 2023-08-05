@@ -25,5 +25,20 @@ function cut_video()
         -y v${date_str}_t10_${video_file}
 }
 
+# function convert video 2 images by ffmpeg , skip before 10 frame, and only get  I frame
+function video2images()
+{
+    video_file=$1
+    start=$2
+    keep_time=$3
+
+    ffmpeg -ss ${start} -t ${keep_time} \
+        -i ${video_file} \
+        -vf "select=eq(pict_type\,I)" \
+        -vsync vfr \
+        -y v${date_str}_t10_${video_file}_%03d.jpg
+}
+
+
 # run main here
 cut_video ${video_file} ${start} ${keep_time}
