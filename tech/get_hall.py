@@ -27,7 +27,7 @@ class MyMail(object):
         smtp_server = 'smtp.qiye.aliyun.com'
         smtp_port = 465
         smtp_username = 'business@x-metaview.com'
-        smtp_password = 'Xys20220110'
+        smtp_password = 'Xys20228888'
 
         # Email content
         subject = f'send hall report {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}'
